@@ -1,0 +1,20 @@
+{
+    "name": "sendcode/ubuntu-butler",
+    "description": "Interact with Ubuntu via PHP.",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "SendCode\\Ubuntu\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Quynh Nguyen",
+            "email": "seriquynh@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.0"
+    }
+}
