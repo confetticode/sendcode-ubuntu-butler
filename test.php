@@ -1,8 +1,3 @@
-# SendCode Ubuntu Butler (on development)
-
-## Usage
-
-```php
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
@@ -45,10 +40,3 @@ if ($result->isSuccessful()) {
 } else {
     echo 'Failed to add the schedule to the server due some reasons.';
 }
-```
-A file should be created at "/etc/cron.d/sendcode-schedule-123" with the following content.
-
-```plain
-# Test schedule on Ubuntu servers
-* * * * * test-user date >> /tmp/date.log
-```
