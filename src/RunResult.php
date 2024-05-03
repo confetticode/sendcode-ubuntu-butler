@@ -6,7 +6,7 @@ use Symfony\Component\Process\Process;
 
 class RunResult
 {
-    public function __construct(private Process $process, private string $log)
+    public function __construct(private Process $process, private ?string $log)
     {
     }
 
@@ -20,7 +20,7 @@ class RunResult
         return ! $this->isSuccessful();
     }
 
-    public function getLog(): string
+    public function getLog(): ?string
     {
         return $this->log;
     }

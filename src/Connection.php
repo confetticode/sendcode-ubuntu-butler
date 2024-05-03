@@ -5,6 +5,7 @@ namespace SendCode\Ubuntu;
 use SendCode\Ubuntu\Contracts\ScriptInterface;
 use SendCode\Ubuntu\Contracts\ServerInterface;
 use Spatie\Ssh\Ssh;
+use Symfony\Component\Process\Process;
 
 class Connection
 {
@@ -37,10 +38,14 @@ class Connection
         }
     }
 
-    private function writeToLogFile(string $buffer): void
+    private function writeLog($type, string $buffer): void
     {
         if (isset($this->logFile) && is_file($this->logFile) && is_readable($this->logFile)) {
             file_put_contents($this->logFile, $buffer, FILE_APPEND);
+        } elseif ($type === Process::ERR) {
+            fwrite(STDERR, $buffer);
+        } else {
+            fwrite(STDOUT, $buffer);
         }
     }
 
@@ -53,11 +58,9 @@ class Connection
             ->disablePasswordAuthentication()
             ->disableStrictHostKeyChecking();
 
-        if (isset($this->logFile) && is_file($this->logFile) && is_readable($this->logFile)) {
-            $ssh->onOutput(function ($type, $buffer) {
-                $this->writeToLogFile($buffer);
-            });
-        }
+        $ssh->onOutput(function ($type, $buffer) {
+            $this->writeLog($type, $buffer);
+        });
 
         $process = $ssh->execute($command);
 
@@ -65,7 +68,7 @@ class Connection
             $log = trim(file_get_contents($this->logFile));
         }
 
-        $result = new RunResult($process, $log);
+        $result = new RunResult($process, $log ?? null);
 
         $this->clearLogFile(); // Clean the log file after running.
 
