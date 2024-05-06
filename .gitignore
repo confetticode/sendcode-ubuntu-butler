@@ -2,4 +2,4 @@
 vendor
 composer.lock
 log.txt
-test.php
+test*.php
