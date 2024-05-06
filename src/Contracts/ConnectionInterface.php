@@ -5,11 +5,11 @@ namespace SendCode\Ubuntu\Contracts;
 use Exception;
 use Symfony\Component\Process\Process;
 
-interface ScriptInterface
+interface ConnectionInterface
 {
     /**
-     * @param ConnectionInterface $connection
+     * @param string|array $command
      * @throws Exception
      */
-    public function runOn(ConnectionInterface $connection): Process;
+    public function run(string|array $command): Process;
 }

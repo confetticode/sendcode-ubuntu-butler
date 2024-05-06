@@ -2,14 +2,32 @@
 
 namespace SendCode\Ubuntu\Scripts;
 
+use SendCode\Ubuntu\Contracts\ConnectionInterface;
 use SendCode\Ubuntu\Contracts\ScheduleInterface;
 use SendCode\Ubuntu\Contracts\ScriptInterface;
+use Symfony\Component\Process\Process;
 
 class AddScheduleScript implements ScriptInterface
 {
     public function __construct(private ScheduleInterface $schedule)
     {
         //
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function runOn(ConnectionInterface $connection): Process
+    {
+        $process = $connection->run(
+            $this->compile()
+        );
+
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException("Failed to add schedule.");
+        }
+
+        return $process;
     }
 
     public function compile(): string

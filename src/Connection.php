@@ -2,12 +2,13 @@
 
 namespace SendCode\Ubuntu;
 
+use SendCode\Ubuntu\Contracts\ConnectionInterface;
 use SendCode\Ubuntu\Contracts\ScriptInterface;
 use SendCode\Ubuntu\Contracts\ServerInterface;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Process\Process;
 
-class Connection
+class Connection implements ConnectionInterface
 {
     private string $logFile;
 
@@ -49,7 +50,10 @@ class Connection
         }
     }
 
-    public function run(string $command): RunResult
+    /**
+     * {@inheritdoc}
+     */
+    public function run(string|array $command): Process
     {
         $this->clearLogFile(); // Clean the log file before running.
 
@@ -62,23 +66,13 @@ class Connection
             $this->writeLog($type, $buffer);
         });
 
-        $process = $ssh->execute(
+        return $ssh->execute(
             str_replace("\r\n", "\n", $command)
         );
-
-        if (isset($this->logFile) && is_file($this->logFile) && is_writable($this->logFile)) {
-            $log = trim(file_get_contents($this->logFile));
-        }
-
-        $result = new RunResult($process, $log ?? null);
-
-        $this->clearLogFile(); // Clean the log file after running.
-
-        return $result;
     }
 
-    public function runScript(ScriptInterface $script): RunResult
+    public function runScript(ScriptInterface $script): Process
     {
-        return $this->run($script->compile());
+        return $script->runOn($this);
     }
 }
