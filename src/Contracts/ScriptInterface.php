@@ -2,14 +2,14 @@
 
 namespace SendCode\Ubuntu\Contracts;
 
-use Exception;
 use Symfony\Component\Process\Process;
 
 interface ScriptInterface
 {
     /**
-     * @param ConnectionInterface $connection
-     * @throws Exception
+     * Run this script on a connection.
+     *
+     * @throws ExceptionInterface when it's failed such as timeout, couldn't add, modify or delete files,...
      */
-    public function runOn(ConnectionInterface $connection): Process;
+    public function run(): Process;
 }

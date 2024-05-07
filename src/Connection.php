@@ -3,8 +3,10 @@
 namespace SendCode\Ubuntu;
 
 use SendCode\Ubuntu\Contracts\ConnectionInterface;
+use SendCode\Ubuntu\Contracts\ExceptionInterface;
 use SendCode\Ubuntu\Contracts\ScriptInterface;
 use SendCode\Ubuntu\Contracts\ServerInterface;
+use SendCode\Ubuntu\Exceptions\FailedException;
 use Spatie\Ssh\Ssh;
 use Symfony\Component\Process\Process;
 
@@ -57,22 +59,27 @@ class Connection implements ConnectionInterface
     {
         $this->clearLogFile(); // Clean the log file before running.
 
-        $ssh = Ssh::create($this->systemUser, $this->server->getIpAddress())
-            ->usePort($this->server->getSshPort())
-            ->disablePasswordAuthentication()
-            ->disableStrictHostKeyChecking();
+        try {
+            $ssh = Ssh::create($this->systemUser, $this->server->getIpAddress())
+                ->usePort($this->server->getSshPort())
+                ->disablePasswordAuthentication()
+                ->disableStrictHostKeyChecking();
 
-        $ssh->onOutput(function ($type, $buffer) {
-            $this->writeLog($type, $buffer);
-        });
+            $ssh->onOutput(function ($type, $buffer) {
+                $this->writeLog($type, $buffer);
+            });
 
-        return $ssh->execute(
-            str_replace("\r\n", "\n", $command)
-        );
-    }
+            return $ssh->execute(
+                str_replace("\r\n", "\n", $command)
+            );
+        } catch (\Exception $ex) {
+            if ($ex instanceof ExceptionInterface) {
+                throw $ex;
+            }
 
-    public function runScript(ScriptInterface $script): Process
-    {
-        return $script->runOn($this);
+            throw (
+                (new FailedException())->setOrigin($ex)
+            );
+        }
     }
 }
