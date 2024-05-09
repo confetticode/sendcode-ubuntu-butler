@@ -7,6 +7,14 @@ use SendCode\Ubuntu\Server;
 
 class ServerTest extends TestCase
 {
+    public function test_it_throws_exception_if_ip_address_invalid(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $server = new Server();
+        $server->setIpAddress('invalid-ip');
+    }
+
     public function test_it_throws_exception_if_ssh_port_invalid(): void
     {
         $this->expectException(\InvalidArgumentException::class);

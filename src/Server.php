@@ -21,6 +21,9 @@ class Server implements ServerInterface
      */
     public function setIpAddress(string $ipAddress): self
     {
+        if (! filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            throw new InvalidArgumentException("$ipAddress is an invalid IP address.");
+        }
         $this->ipAddress = $ipAddress;
 
         return $this;
@@ -37,7 +40,7 @@ class Server implements ServerInterface
     public function setSshPort(int $sshPort): self
     {
         if ($sshPort > 65535) {
-            throw new InvalidArgumentException("$sshPort is invalid.");
+            throw new InvalidArgumentException("$sshPort is an invalid SSH port.");
         }
         $this->sshPort = $sshPort;
 
