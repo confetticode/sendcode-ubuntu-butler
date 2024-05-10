@@ -9,6 +9,7 @@ interface ConnectionInterface
     /**
      * Running the given command on a specific server.
      *
+     * @param string|string[] $command
      * @throws ExceptionInterface when it's failed to run the given command. Eg: it's timeout or does not have permissions (a regular user tries to run a sudo command).
      */
     public function run(string|array $command): Process;

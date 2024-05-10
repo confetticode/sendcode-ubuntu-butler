@@ -13,59 +13,25 @@ Imagine your have a server, it's public IP address is 192.168.33.11 and allows t
 ```php
 <?php
 
+use SendCode\Ubuntu\Connection;
+use SendCode\Ubuntu\Contracts\ExceptionInterface;
+
 require __DIR__ . '/vendor/autoload.php';
 
-use SendCode\Ubuntu\Contracts\ExceptionInterface;
-use SendCode\Ubuntu\Server;
-
-$server = (new Server)
-    ->setIpAddress('192.168.33.11')
-    ->setSshPort(22)
-    ->setKeyFile('/home/vagrant/.ssh/id_ed25519');
+$connection = (new Connection())
+    ->setUser('vagrant')
+    ->setHost('127.0.0.1')
+    ->setPort(22)
+    ->setKeyFile('/home/vagrant/.ssh/id_ed25519')
+//    ->setLogFile(__DIR__ . '/log.txt')
+;
 
 try {
-    $process = $server->sshAs('vagrant')->run("
-echo 'List directories and files inside /root/ directory:'
+    $process = $connection->run("
+echo 'List items inside /root/ directory:'
 
-sudo su
-
-ls -la /root/
+sudo ls -la /root
 ");
-} catch (ExceptionInterface $exception) {
-    //
-}
-```
-
-- Run a specific script, Eg: add a schedule to the server.
-
-```
-<?php
-
-require __DIR__ . '/vendor/autoload.php';
-
-use SendCode\Ubuntu\Contracts\ExceptionInterface;
-use SendCode\Ubuntu\Resources\Schedule;
-use SendCode\Ubuntu\Scripts\AddScheduleScript;
-use SendCode\Ubuntu\Server;
-
-$schedule = (new Schedule)
-    ->setId(123)
-    ->setName('Test schedule')
-    ->setCronExpression('* * * * *')
-    ->setSystemUser('vagrant')
-    ->setCommand('date >> /tmp/date.log');
-
-$server = (new Server)
-    ->setIpAddress('192.168.33.11')
-    ->setSshPort(22)
-    ->setKeyFile('/home/vagrant/.ssh/id_ed25519');
-
-$connection = $server->sshAs('vagrant');
-
-$script = new AddScheduleScript($connection, $schedule);
-
-try {
-    $script->run();
 } catch (ExceptionInterface $exception) {
     //
 }

@@ -5,7 +5,7 @@ namespace SendCode\Ubuntu\Exceptions;
 use Exception;
 use SendCode\Ubuntu\Contracts\ExceptionInterface;
 
-class FailedException extends \Exception implements ExceptionInterface
+class FailedException extends Exception implements ExceptionInterface
 {
     private ?Exception $origin;
 
